@@ -1,0 +1,32 @@
+{
+  "name": "tray-hub",
+  "version": "0.0.1",
+  "description": "nostr-relay-tray hub",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodyTseng/tray-hub"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "author": "codytseng",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.11",
+    "prettier": "3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@nostr-relay/core": "^0.0.23",
+    "@nostr-relay/validator": "^0.0.23",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pino": "^9.3.0",
+    "ws": "^8.18.0"
+  }
+}
