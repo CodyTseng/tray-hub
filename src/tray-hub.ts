@@ -1,14 +1,15 @@
 import {
-  EventRepository,
   Event,
+  EventRepository,
   EventRepositoryUpsertResult,
+  EventUtils,
   Filter,
   MessageType,
-  EventUtils,
 } from '@nostr-relay/common';
 import { Validator } from '@nostr-relay/validator';
 import { randomUUID } from 'crypto';
 import { WebSocketServer } from 'ws';
+import { Config } from './config';
 
 export class TrayHub extends EventRepository {
   private readonly findJobs = new Map<
@@ -24,8 +25,12 @@ export class TrayHub extends EventRepository {
     const validator = new Validator();
 
     wss.on('connection', (ws) => {
-      ws.on('message', (message) => {
-        const [type, ...payload] = JSON.parse(message.toString());
+      ws.on('message', (data) => {
+        const message = JSON.parse(data.toString());
+        if (!Array.isArray(message)) {
+          return;
+        }
+        const [type, ...payload] = message;
         switch (type) {
           case MessageType.EVENT: {
             const [subId, rawEvent] = payload;
@@ -78,9 +83,15 @@ export class TrayHub extends EventRepository {
       const timer = setTimeout(finish, 5000);
 
       const eventCb = (event: Event) => {
-        const validateErrorMsg = EventUtils.validate(event);
-        if (validateErrorMsg) {
-          return;
+        if (!Config.SKIP_VALIDATION) {
+          const validateErrorMsg = EventUtils.validate(event);
+          if (validateErrorMsg) {
+            return;
+          }
+          const isMatchFilter = EventUtils.isMatchingFilter(event, filter);
+          if (!isMatchFilter) {
+            return;
+          }
         }
         eventMap.set(event.id, event);
         if (eventMap.size >= (filter.limit ?? 100)) {

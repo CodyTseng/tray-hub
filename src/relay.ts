@@ -2,12 +2,13 @@ import { createOutgoingNoticeMessage, NostrRelay } from '@nostr-relay/core';
 import { Validator } from '@nostr-relay/validator';
 import { join } from 'path';
 import { WebSocketServer } from 'ws';
+import { Config } from './config';
 import { RequestLogger } from './request-logger';
 import { TrayHub } from './tray-hub';
 
 export function startRelay(wss: WebSocketServer, trayHub: TrayHub) {
-  const relay = new NostrRelay(trayHub, { domain: process.env.DOMAIN });
-  const logsDir = process.env.LOG_DIR ?? join(__dirname, '../logs');
+  const relay = new NostrRelay(trayHub, { domain: Config.DOMAIN });
+  const logsDir = Config.LOG_DIR ?? join(__dirname, '../logs');
   relay.register(new RequestLogger(logsDir));
 
   const validator = new Validator();

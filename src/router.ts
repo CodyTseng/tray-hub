@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { TrayHub } from './tray-hub';
 import { WebSocketServer } from 'ws';
+import { Config } from './config';
 
 export function registerRoutes(
   wssForTray: WebSocketServer,
@@ -16,7 +16,7 @@ export function registerRoutes(
     supported_nips: [1, 2, 4, 11, 13, 22, 26, 28, 40],
   };
 
-  if (process.env.DOMAIN) {
+  if (Config.DOMAIN) {
     relayInfo.supported_nips.push(42);
   }
 
