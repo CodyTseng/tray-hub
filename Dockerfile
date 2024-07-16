@@ -30,4 +30,4 @@ RUN npm ci --omit=dev
 COPY --from=build /app/dist .
 
 # Start the application
-CMD node main.js
+CMD node src/main.js

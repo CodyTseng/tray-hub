@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { WebSocketServer } from 'ws';
+import * as packageJson from '../package.json';
 import { Config } from './config';
 
 export function registerRoutes(
@@ -9,10 +10,10 @@ export function registerRoutes(
   const router = Router();
 
   const relayInfo = {
-    name: 'tray-hub',
-    version: '0.0.1',
-    description: 'A nostr-relay-tray hub',
-    software: 'tray-hub',
+    name: packageJson.name,
+    version: packageJson.version,
+    description: packageJson.description,
+    software: packageJson.repository.url,
     supported_nips: [1, 2, 4, 11, 13, 22, 26, 28, 40],
   };
 
