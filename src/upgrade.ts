@@ -14,7 +14,7 @@ export function handleUpgrade(
       wssForClient.handleUpgrade(request, socket, head, function done(ws) {
         wssForClient.emit('connection', ws, request);
       });
-    } else if (pathname === '/tray') {
+    } else if (pathname === '/join') {
       wssForTray.handleUpgrade(request, socket, head, function done(ws) {
         wssForTray.emit('connection', ws, request);
       });
