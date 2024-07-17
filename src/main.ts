@@ -1,8 +1,7 @@
-import 'dotenv/config';
-
 import Express from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
+import { Config } from './config';
 import { startRelay } from './relay';
 import { registerRoutes } from './router';
 import { TrayHub } from './tray-hub';
@@ -21,7 +20,7 @@ async function bootstrap() {
 
   app.use('/', registerRoutes(wssForTray, wssForClient));
 
-  server.listen(3000, () => {
+  server.listen(Config.PORT, () => {
     console.log('Server is running on port 3000');
   });
 }
