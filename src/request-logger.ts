@@ -11,14 +11,18 @@ import { mkdirSync, statSync } from 'fs';
 export class RequestLogger implements HandleMessagePlugin {
   private readonly logger: Pino.Logger;
 
-  constructor(dirPath: string) {
-    ensureDirSync(dirPath);
-    this.logger = Pino({
-      transport: {
-        target: 'pino/file',
-        options: { destination: path.join(dirPath, 'requests.log') },
-      },
-    });
+  constructor(dirPath?: string) {
+    if (dirPath) {
+      ensureDirSync(dirPath);
+      this.logger = Pino({
+        transport: {
+          target: 'pino/file',
+          options: { destination: path.join(dirPath, 'requests.log') },
+        },
+      });
+    } else {
+      this.logger = Pino();
+    }
   }
 
   async handleMessage(

@@ -83,7 +83,7 @@ export class TrayHub extends EventRepository {
       const timer = setTimeout(finish, 5000);
 
       const eventCb = (event: Event) => {
-        if (!Config.SKIP_VALIDATION) {
+        if (!Config.TRUST_RELAY) {
           const validateErrorMsg = EventUtils.validate(event);
           if (validateErrorMsg) {
             return;

@@ -4,7 +4,9 @@ export const Config = {
   PORT: transformToNumber(process.env.PORT) ?? 3000,
   DOMAIN: process.env.DOMAIN,
   LOG_DIR: process.env.LOG_DIR,
-  SKIP_VALIDATION: transformToBoolean(process.env.SKIP_VALIDATION),
+  TRUST_RELAY: transformToBoolean(process.env.TRUST_RELAY),
+  PUBKEY: process.env.PUBKEY,
+  CONTACT: process.env.CONTACT,
 };
 
 function transformToNumber(value: string | undefined): number | undefined {

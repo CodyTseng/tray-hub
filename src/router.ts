@@ -13,6 +13,8 @@ export function registerRoutes(
     name: packageJson.name,
     version: packageJson.version,
     description: packageJson.description,
+    pubkey: Config.PUBKEY,
+    contact: Config.CONTACT,
     software: packageJson.repository.url,
     supported_nips: [1, 2, 4, 11, 13, 22, 26, 28, 40],
   };
