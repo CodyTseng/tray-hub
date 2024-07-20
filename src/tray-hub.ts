@@ -8,7 +8,7 @@ import {
 } from '@nostr-relay/common';
 import { Validator } from '@nostr-relay/validator';
 import { randomUUID } from 'crypto';
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { Config } from './config';
 
 export class TrayHub extends EventRepository {
@@ -19,12 +19,20 @@ export class TrayHub extends EventRepository {
       eoseCb: () => void;
     }
   >();
+  private readonly map = new WeakMap<WebSocket, null | object>();
 
   constructor(private readonly wss: WebSocketServer) {
     super();
     const validator = new Validator();
 
     wss.on('connection', (ws) => {
+      this.map.set(ws, null);
+      setTimeout(() => {
+        if (!this.map.get(ws)) {
+          ws.close();
+        }
+      }, 2000);
+
       ws.on('message', (data) => {
         const message = JSON.parse(data.toString());
         if (!Array.isArray(message)) {
@@ -32,6 +40,10 @@ export class TrayHub extends EventRepository {
         }
         const [type, ...payload] = message;
         switch (type) {
+          case 'JOIN':
+            this.map.set(ws, payload[0]);
+            ws.send(JSON.stringify(['JOINED']));
+            break;
           case MessageType.EVENT: {
             const [subId, rawEvent] = payload;
             const job = this.findJobs.get(subId);
