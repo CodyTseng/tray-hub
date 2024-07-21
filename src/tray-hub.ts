@@ -25,13 +25,34 @@ export class TrayHub extends EventRepository {
     super();
     const validator = new Validator();
 
+    setInterval(() => {
+      this.wss.clients.forEach((ws) => {
+        if (ws.readyState === 1) {
+          ws.ping();
+        }
+      });
+    }, 10000);
+
     wss.on('connection', (ws) => {
+      let terminateTimer: NodeJS.Timeout;
       this.map.set(ws, null);
       setTimeout(() => {
         if (!this.map.get(ws)) {
           ws.close();
         }
       }, 2000);
+
+      ws.on('pong', () => {
+        // Reset the timeout for this WebSocket connection
+        clearTimeout(terminateTimer);
+        terminateTimer = setTimeout(() => {
+          ws.terminate();
+        }, 30000);
+      });
+
+      ws.on('close', () => {
+        clearTimeout(terminateTimer);
+      });
 
       ws.on('message', (data) => {
         const message = JSON.parse(data.toString());
