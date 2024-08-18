@@ -8,7 +8,8 @@ import {
 } from '@nostr-relay/common';
 import { Validator } from '@nostr-relay/validator';
 import { randomUUID } from 'crypto';
-import { WebSocketServer, WebSocket } from 'ws';
+import { Observable } from 'rxjs';
+import { WebSocket, WebSocketServer } from 'ws';
 import { Config } from './config';
 
 export class TrayHub extends EventRepository {
@@ -99,19 +100,19 @@ export class TrayHub extends EventRepository {
     return { isDuplicate: false };
   }
 
-  find(filter: Filter): Promise<Event[]> {
-    return new Promise((resolve) => {
-      const subId = randomUUID();
-      const eventMap = new Map<string, Event>();
+  find(filter: Filter): Observable<Event> {
+    const subId = randomUUID();
+    return new Observable((subscriber) => {
       let trayCount = 0;
       let eoseCount = 0;
+      let eventIds = new Set<string>();
       const finish = () => {
         this.findJobs.delete(subId);
         if (timer) {
           clearTimeout(timer);
         }
         this.broadcast([MessageType.CLOSE, subId]);
-        resolve(Array.from(eventMap.values()));
+        subscriber.complete();
       };
       const timer = setTimeout(finish, 5000);
 
@@ -126,8 +127,11 @@ export class TrayHub extends EventRepository {
             return;
           }
         }
-        eventMap.set(event.id, event);
-        if (eventMap.size >= (filter.limit ?? 100)) {
+        if (eventIds.has(event.id)) return;
+
+        subscriber.next(event);
+        eventIds.add(event.id);
+        if (eventIds.size >= (filter.limit ?? 100)) {
           finish();
         }
       };
